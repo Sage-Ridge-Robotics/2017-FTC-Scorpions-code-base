@@ -113,6 +113,13 @@ public class ScorpioTeleOp_DrivesOnly extends LinearOpMode {
             // Alternatively, some teams use
             // (tanh(x)/tanh(1))^3
 
+            // Wolfram code to visualize the options
+            // scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24, 0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+            // Plot[{Power[x, 3], Power[x, 5], Power[x, 7], (Power[Tanh[x]/Tanh[1], 3]), Part[scaleArray,
+            // IntegerPart[16 x]]}, {x, 0, 1},
+            // PlotLegends -> Placed[{"Power 3", "Power 5", "Power 7", "Tanh (tanh(x)/tanh(1)ˆ3)" ,
+            // "Scale array function"} , Right]]
+
 
             // Tank Mode uses one stick to control each wheel. Make sure to scale as above!
             // - This requires no math, but it is hard to drive forward slowly and keep straight.

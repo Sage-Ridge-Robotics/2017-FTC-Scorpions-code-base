@@ -72,8 +72,9 @@ public class ScorpioTeleop extends LinearOpMode {
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             // This way it's also easy to just drive straight, or just turn.
+            // Turning is further tamped down.
             drive = -gamepad1.right_stick_y;
-            turn  =  gamepad1.right_stick_x;
+            turn  =  Math.pow(gamepad1.right_stick_x,3.0);
 
             // Combine drive and turn for blended motion.
             leftPower = robot.scalePower(Range.clip(drive + turn, -1.0, 1.0));
@@ -84,9 +85,9 @@ public class ScorpioTeleop extends LinearOpMode {
             robot.rightDrive.setPower(rightPower);
 
             // Use gamepad left & right Bumpers to move the tail.
-            if (gamepad1.right_bumper)
+            if (gamepad1.dpad_left)
                 tailOffset += TAIL_SPEED;
-            else if (gamepad1.left_bumper)
+            else if (gamepad1.dpad_right)
                 tailOffset -= TAIL_SPEED;
 
             // Move both servos to new position.  Assume servos are mirror image of each other.
@@ -110,28 +111,25 @@ public class ScorpioTeleop extends LinearOpMode {
             Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
 
             // Send drive and color telemetry to the driver station;
-            telemetry.addData("tail", "Offset = %.2f", tailOffset);
             telemetry.addData("left", "%.2f", leftPower);
             telemetry.addData("right", "%.2f", rightPower);
-            telemetry.addData("Red  ", robot.colorSensor.red());
-            telemetry.addData("Green", robot.colorSensor.green());
-            telemetry.addData("Blue ", robot.colorSensor.blue());
-            telemetry.addData("Hue", hsvValues[0]);
-
+            telemetry.addData("Color hue", hsvValues[0]);
 
             // Send IR data to the driver station if an infrared signal is detected.
-//        if (robot.irSeeker.signalDetected()) {
-//            // Display angle and strength
-//            telemetry.addData("Angle", robot.irSeeker.getAngle());
-//            telemetry.addData("Strength", robot.irSeeker.getStrength());
-//        } else {
-//            // Display loss of signal
-//            telemetry.addData("Seeker", "No signal");
-//        }
+        if (robot.irSeeker.signalDetected()) {
+
+            // Display angle and strength
+            telemetry.addData("Angle", robot.irSeeker.getAngle());
+            telemetry.addData("Strength", robot.irSeeker.getStrength());
+        } else {
+
+            // Display loss of signal
+            telemetry.addData("Seeker", "No signal");
+        }
             telemetry.update();
 
 
-            // Pace this loop so tail action is reasonable speed.
+            // Pace this loop.
             sleep(50);
         }
     }
