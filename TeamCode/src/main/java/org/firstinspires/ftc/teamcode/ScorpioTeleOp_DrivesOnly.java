@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by cvn on 11/19/17.
- * <p>
+ *
  * Simple example TeleOp mode for Scorpio operating the left and right main drives only.
  * Based on the LinearOpMode example code.
  */
@@ -86,6 +86,8 @@ public class ScorpioTeleOp_DrivesOnly extends LinearOpMode {
         while (opModeIsActive()) {
 
             // Setup a variable for each drive wheel to save power level for telemetry
+            double drive;
+            double turn;
             double leftPower;
             double rightPower;
 
@@ -94,13 +96,11 @@ public class ScorpioTeleOp_DrivesOnly extends LinearOpMode {
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            double drive = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
-
-
-            // The following simply clips the min and max speed.
+            drive = -gamepad1.left_stick_y;
+            turn = gamepad1.right_stick_x;
             leftPower = Range.clip(drive + turn, -1.0, 1.0);
             rightPower = Range.clip(drive - turn, -1.0, 1.0);
+
 
             // Most teams scale their power output. For instance,
             // leftPower = Math.pow(leftPower,3.0);   // Scaling function using an exponent of

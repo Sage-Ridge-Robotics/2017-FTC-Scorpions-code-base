@@ -2,173 +2,138 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.view.View;
-
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
 
 /**
  * Created by cvn on 11/19/17.
- * <p>
- * This file provides tha basic driving framework for Scorpio in teleop mode and
- * illustrates the attached sensors.
+ *
+ * This opmode provides a basic driving framework for Scorpio in TeleOp mode and
+ * illustrates the attached sensors. This opmode extends the Linear Opmode class and
+ * uses a modified POV model of control. The right joystick controls speed and direction
+ * using the y-axis for speed and x-axis for direction.
+ *
  */
 
 @TeleOp(name = "Scorpio TeleOp", group = "Scorpio")
-public class ScorpioTeleop extends OpMode {
+public class ScorpioTeleop extends LinearOpMode {
 
-    /// Declare OpMode members.
-    HardwareScorpio robot = new HardwareScorpio(); // use the class created to define your hardware
+    // Instantiate the hardware abstraction class HardwareScorpio
+    HardwareScorpio robot = new HardwareScorpio();
+
+    // Declare settings for tail
     double tailOffset = 0.0;
-    final double TAIL_SPEED = 0.02;                 // sets rate to move the tail base.
+    final double TAIL_SPEED = 0.02;
 
-    // Color sensor HSV data.
+    // Color sensor HSV data. Note we are using hexadecimal values here.
     float hsvValues[] = {0F, 0F, 0F};
     final float values[] = hsvValues;
 
-    // Get a reference to the RelativeLayout so we can change the background
-    // color of the Robot Controller app to match the hue detected by the RGB sensor.
-    int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-    final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-
     // Color sensor variables
-    // bPrevState and bCurrState represent the previous and current state of the button controlling the color sensor LED.
+    // bPrevState and bCurrState represent the previous and current state of the button
+    // controlling the color sensor LED.
     boolean bPrevState = false;
     boolean bCurrState = false;
 
     // bLedOn represents the state of the LED.
     boolean bLedOn = true;
-    boolean bLedOff = false;
 
 
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
+    // On initialization of the OpMode
     @Override
-    public void init() {
-        /* Initialize the hardware variables.
-         * The init() method of the hardware class does all the work here
-         */
+    public void runOpMode() {
+        double leftPower;
+        double rightPower;
+        double drive;
+        double turn;
+
+        // Initialize the hardware variables.
+        // The init() method of the hardware class does all the work.
         robot.init(hardwareMap);
+
+        // Set initial conditions. LED on. Motors zero.
         robot.colorSensor.enableLed(bLedOn);
-        // Set the Driver Station panel to a default neutral color
-        /*relativeLayout.post(new Runnable() {
-            public void run() {
-                relativeLayout.setBackgroundColor(Color.WHITE);
+        robot.leftDrive.setPower(0);
+        robot.rightDrive.setPower(0);
+        robot.tailBase.setPosition(robot.MID_SERVO);
+
+        // Telemetry update.
+        telemetry.addData("State: ", "Ready ... waiting for start.");    //
+        telemetry.update();
+
+        // Wait for the game to start (driver presses PLAY)
+        waitForStart();
+
+        // run until the end of the match (driver presses STOP)
+        while (opModeIsActive()) {
+
+            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
+            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+            // This way it's also easy to just drive straight, or just turn.
+            drive = -gamepad1.right_stick_y;
+            turn  =  gamepad1.right_stick_x;
+
+            // Combine drive and turn for blended motion.
+            leftPower = robot.scalePower(Range.clip(drive + turn, -1.0, 1.0));
+            rightPower = robot.scalePower(Range.clip(drive - turn, -1.0, 1.0));
+
+            // Output the safe vales to the motor drives.
+            robot.leftDrive.setPower(leftPower);
+            robot.rightDrive.setPower(rightPower);
+
+            // Use gamepad left & right Bumpers to move the tail.
+            if (gamepad1.right_bumper)
+                tailOffset += TAIL_SPEED;
+            else if (gamepad1.left_bumper)
+                tailOffset -= TAIL_SPEED;
+
+            // Move both servos to new position.  Assume servos are mirror image of each other.
+            tailOffset = Range.clip(tailOffset, -0.5, 0.5);
+            robot.tailBase.setPosition(robot.MID_SERVO + tailOffset);
+            robot.tailBase.setPosition(robot.MID_SERVO - tailOffset);
+
+
+            bCurrState = gamepad1.x;
+            if (bCurrState && (bCurrState != bPrevState)) {
+
+                // button is transitioning to a pressed state. So Toggle LED
+                bLedOn = !bLedOn;
+                robot.colorSensor.enableLed(bLedOn);
             }
 
-        });*/
+            // update previous state variable.
+            bPrevState = bCurrState;
 
-        telemetry.addData("Say", "Ready ... ");    //
-    }
+            // convert the RGB values to HSV values.
+            Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-     */
-    @Override
-    public void init_loop() {
-    }
+            // Send drive and color telemetry to the driver station;
+            telemetry.addData("tail", "Offset = %.2f", tailOffset);
+            telemetry.addData("left", "%.2f", leftPower);
+            telemetry.addData("right", "%.2f", rightPower);
+            telemetry.addData("Red  ", robot.colorSensor.red());
+            telemetry.addData("Green", robot.colorSensor.green());
+            telemetry.addData("Blue ", robot.colorSensor.blue());
+            telemetry.addData("Hue", hsvValues[0]);
 
-    /*
-     * Code to run ONCE when the driver hits PLAY
-     */
-    @Override
-    public void start() {
-        bLedOn = true;
-        robot.colorSensor.enableLed(bLedOn);
-        telemetry.addData("Say", "Starting ... ");
-        // runtime.reset();
-    }
 
-    /*
-     * Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-     */
-    @Override
-    public void loop() {
+            // Send IR data to the driver station if an infrared signal is detected.
+//        if (robot.irSeeker.signalDetected()) {
+//            // Display angle and strength
+//            telemetry.addData("Angle", robot.irSeeker.getAngle());
+//            telemetry.addData("Strength", robot.irSeeker.getStrength());
+//        } else {
+//            // Display loss of signal
+//            telemetry.addData("Seeker", "No signal");
+//        }
+            telemetry.update();
 
-        double left;
-        double right;
 
-        // Run main drive wheels
-        left = -gamepad1.left_stick_y;
-        right = -gamepad1.right_stick_y;
-
-        robot.leftDrive.setPower(left);
-        robot.rightDrive.setPower(right);
-
-        // Use gamepad left & right Bumpers to turn tail
-        if (gamepad1.right_bumper)
-            tailOffset += TAIL_SPEED;
-        else if (gamepad1.left_bumper)
-            tailOffset -= TAIL_SPEED;
-
-        tailOffset = Range.clip(tailOffset, -0.5, 0.5);
-        robot.tailBase.setPosition(robot.MID_SERVO + tailOffset);
-
-        // check the status of the x button on either gamepad.
-        bCurrState = gamepad1.x;
-
-        // check for button state transitions.
-        if (bCurrState && (bCurrState != bPrevState)) {
-
-            // button is transitioning to a pressed state. So Toggle LED
-            bLedOn = !bLedOn;
-            robot.colorSensor.enableLed(bLedOn);
+            // Pace this loop so tail action is reasonable speed.
+            sleep(50);
         }
-
-        // update previous state variable.
-        bPrevState = bCurrState;
-
-        // convert the RGB values to HSV values.
-        Color.RGBToHSV(robot.colorSensor.red() * 8, robot.colorSensor.green() * 8, robot.colorSensor.blue() * 8, hsvValues);
-
-        // Change the background color of the DriverStation app to match the color detected by the RGB sensor.
-        relativeLayout.post(new Runnable() {
-            public void run() {
-                relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
-            }
-        });
-
-        // Send drive telemetry to the driver station;
-        telemetry.addData("tail", "Offset = %.2f", tailOffset);
-        telemetry.addData("left", "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
-
-        // Send color information to the driver station.
-        telemetry.addData("LED", bLedOn ? "On" : "Off");
-        telemetry.addData("Clear", robot.colorSensor.alpha());
-        telemetry.addData("Red  ", robot.colorSensor.red());
-        telemetry.addData("Green", robot.colorSensor.green());
-        telemetry.addData("Blue ", robot.colorSensor.blue());
-        telemetry.addData("Hue", hsvValues[0]);
-
-        // Send IR data to the driver station if an infrared signal is detected.
-        if (robot.irSeeker.signalDetected()) {
-            // Display angle and strength
-            telemetry.addData("Angle", robot.irSeeker.getAngle());
-            telemetry.addData("Strength", robot.irSeeker.getStrength());
-        } else {
-            // Display loss of signal
-            telemetry.addData("Seeker", "No signal");
-        }
-
-    }
-
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
-        // Set the panel back to the default color
-        relativeLayout.post(new Runnable() {
-            public void run() {
-                relativeLayout.setBackgroundColor(Color.WHITE);
-            }
-        });
-        robot.colorSensor.enableLed(bLedOff);
-        telemetry.addData("Say", "Stopped ... ");
     }
 
 
