@@ -41,7 +41,7 @@ public class HardwareScorpio
     public Servo tailBase = null;
     public ColorSensor colorSensor = null;
     public IrSeekerSensor irSeeker = null;
-    public androidAccelerometer
+    // public androidAccelerometer
 
     public static final double MID_SERVO = 0.5;
 
@@ -80,8 +80,8 @@ public class HardwareScorpio
         irSeeker = hwMap.get(IrSeekerSensor.class, "Front_IR");
 
         // Android sensors
-        androidAccelerometer =
-                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        // androidAccelerometer =
+        //         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
 
 
