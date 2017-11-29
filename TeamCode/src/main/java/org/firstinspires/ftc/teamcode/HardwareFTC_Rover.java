@@ -175,27 +175,27 @@ public class HardwareFTC_Rover
     // After https://ftcforum.usfirst.org/forum/ftc-technology/android-studio/6361-mecanum-wheels-drive-code-example
     // For further information on controlling mecanum wheels consult the following collection of
     // documents: https://www.chiefdelphi.com/media/papers/2390
-    public void holonomic(double Speed, double Turn, double Strafe, double MAX_SPEED){
+    //public void holonomic(double Speed, double Turn, double Strafe, double MAX_SPEED){
 
 //      Left Front = +Speed + Turn - Strafe      Right Front = +Speed - Turn + Strafe
 //      Left Rear  = +Speed + Turn + Strafe      Right Rear  = +Speed - Turn - Strafe
 
-        double Magnitude = abs(Speed) + abs(Turn) + abs(Strafe);
-        Magnitude = (Magnitude > 1) ? Magnitude : 1; //Set scaling to keep -1,+1 range
+        //double Magnitude = Math.abs(Speed) + Math.abs(Turn) + Math.abs(Strafe);
+        //Magnitude = (Magnitude > 1) ? Magnitude : 1; //Set scaling to keep -1,+1 range
 
-        leftFrontDrive.setPower(scale((scaleInput(Speed) + scaleInput(Turn) - scaleInput(Strafe)),
-                -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
-        if (leftRearDrive != null) {
-            leftRearDrive.setPower(scale((scaleInput(Speed) + scaleInput(Turn) + scaleInput(Strafe)),
-                    -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
-        }
-        rightFrontDrive.setPower(scale((scaleInput(Speed) - scaleInput(Turn) + scaleInput(Strafe)),
-                -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
-        if (rightRearDrive != null) {
-            rightRearDrive.setPower(scale((scaleInput(Speed) - scaleInput(Turn) - scaleInput(Strafe)),
-                    -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
-        }
-    }
+        //leftFrontDrive.setPower(Math.scalb(scale((scaleInput(Speed) + scaleInput(Turn) - scaleInput(Strafe)),
+        //        -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        //if (leftRearDrive != null) {
+    //   leftRearDrive.setPower(scale((scaleInput(Speed) + scaleInput(Turn) + scaleInput(Strafe)),
+    //                -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+      //  }
+        //rightFrontDrive.setPower(scale((scaleInput(Speed) - scaleInput(Turn) + scaleInput(Strafe)),
+          //      -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        //if (rightRearDrive != null) {
+          //  rightRearDrive.setPower(scale((scaleInput(Speed) - scaleInput(Turn) - scaleInput(Strafe)),
+            //        -Magnitude, +Magnitude, -MAX_SPEED, +MAX_SPEED));
+        //}
+    //}
 
 
 

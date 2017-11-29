@@ -117,9 +117,6 @@ public class ScorpioTeleop extends LinearOpMode {
             telemetry.addData("left", "%.2f", leftPower);
             telemetry.addData("right", "%.2f", rightPower);
             telemetry.addData("Color hue", hsvValues[0]);
-            telemetry.addData("Lin accel X", SensorEvent.values[0]);
-            telemetry.addData("Lin accel Y", SensorEvent.values[1]);
-            telemetry.addData("Lin accel Z", SensorEvent.values[2]);
 
 
 
