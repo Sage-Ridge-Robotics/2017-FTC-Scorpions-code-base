@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.hardware.Sensor;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -39,6 +41,7 @@ public class HardwareScorpio
     public Servo tailBase = null;
     public ColorSensor colorSensor = null;
     public IrSeekerSensor irSeeker = null;
+    public androidAccelerometer
 
     public static final double MID_SERVO = 0.5;
 
@@ -75,6 +78,12 @@ public class HardwareScorpio
         // Define and initialize sensors
         colorSensor = hwMap.get(ColorSensor.class, "Front_color");
         irSeeker = hwMap.get(IrSeekerSensor.class, "Front_IR");
+
+        // Android sensors
+        androidAccelerometer =
+                sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+
 
     }
 

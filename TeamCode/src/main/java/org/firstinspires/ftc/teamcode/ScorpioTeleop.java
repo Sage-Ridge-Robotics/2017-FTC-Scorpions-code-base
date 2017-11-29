@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.graphics.Color;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -114,6 +117,11 @@ public class ScorpioTeleop extends LinearOpMode {
             telemetry.addData("left", "%.2f", leftPower);
             telemetry.addData("right", "%.2f", rightPower);
             telemetry.addData("Color hue", hsvValues[0]);
+            telemetry.addData("Lin accel X", SensorEvent.values[0]);
+            telemetry.addData("Lin accel Y", SensorEvent.values[1]);
+            telemetry.addData("Lin accel Z", SensorEvent.values[2]);
+
+
 
             // Send IR data to the driver station if an infrared signal is detected.
         if (robot.irSeeker.signalDetected()) {
