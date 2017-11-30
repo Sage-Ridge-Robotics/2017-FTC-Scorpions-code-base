@@ -129,7 +129,7 @@ public class FTC_RoverTeleOp extends LinearOpMode {
             // Move both servos to new position.  Assume servos are mirror image of each other.
             if (gOpen) {
                 robot.leftCubeGrappleServo.setPosition(robot.SERVO_OPEN);
-                robot.rightCubeGrappleServo.setPosition(-robot.SERVO_OPEN);
+                robot.rightCubeGrappleServo.setPosition(1-robot.SERVO_OPEN);
             }
              else {
                 robot.leftCubeGrappleServo.setPosition(robot.SERVO_CLOSED);
