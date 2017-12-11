@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.Range;
  * This opmode provides a basic driving framework for FTC Rover in TeleOp mode using holonomic
  * drives. This opmode extends the Linear Opmode class.
  *
+ * Co created by Caleb Briggs
  */
 
 @TeleOp(name = "FTC Rover TeleOp", group = "Example Rover")
@@ -52,7 +53,7 @@ public class FTC_RoverTeleOp extends LinearOpMode {
         robot.rightFrontDrive.setPower(0);
         robot.leftRearDrive.setPower(0);
         robot.rightRearDrive.setPower(0);
-        //robot.grappleDrive.setPower(0);
+        robot.grappleDrive.setPower(0);
         robot.leftCubeGrappleServo.setPosition(robot.SERVO_OPEN);
         robot.rightCubeGrappleServo.setPosition(-robot.SERVO_OPEN);
 
@@ -78,23 +79,23 @@ public class FTC_RoverTeleOp extends LinearOpMode {
 
 
             // Get joystick values, limit range, and scale for response
-            double leftX = robot.scalePower(Range.clip(gamepad1.left_stick_x, -1.0, 1.0));
-            double leftY = robot.scalePower(Range.clip(gamepad1.left_stick_y, -1.0, 1.0));
-            double rightX = robot.scalePower(Range.clip(-   gamepad1.right_stick_y, -1.0, 1.0));
+            double strafe = robot.scalePower(Range.clip(gamepad1.left_stick_y, -1.0, 1.0));
+            double rotate = -robot.scalePower(Range.clip(-gamepad1.right_stick_y, -1.0, 1.0));
+            double drive = robot.scalePower(Range.clip(   gamepad1.right_stick_x, -1.0, 1.0));
             //double rightY = robot.scalePower(gamepad1.right_stick_y)
 
             // Calculate r and angle for translation
-            double r = Math.hypot(leftX, leftY);
-            double robotAngle = Math.atan2(leftY, leftX) - Math.PI / 4;
+            //double r = Math.hypot(leftX, leftY);
+           // double robotAngle = Math.atan2(leftY, leftX) - Math.PI / 4;
 
             // Calculate power level to deliver to each drive
-            final double v1 = r * Math.cos(robotAngle) + rightX; // Left front drive
-            final double v2 = r * Math.sin(robotAngle) - rightX; // Right front drive
-            final double v3 = r * Math.sin(robotAngle) + rightX; // Left rear drive
-            final double v4 = r * Math.cos(robotAngle) - rightX; // Right rear drive
+            final double v1 = Range.clip(drive + strafe + rotate,-1.0,1.0); // Left front drive
+            final double v2 = Range.clip(drive - strafe - rotate,-1.0,1.0); // Right front drive
+            final double v3 = Range.clip(drive - strafe - rotate,-1,1); // Left rear drive
+            final double v4 = Range.clip(drive + strafe + rotate,-1,1); // Right rear drive
 
             // Set drive power levels
-            robot.leftFrontDrive.setPower(v1);
+            robot.leftFrontDrive.setPower(v1); 
             robot.rightFrontDrive.setPower(v2);
             robot.leftRearDrive.setPower(v3);
             robot.rightRearDrive.setPower(v4);
@@ -111,17 +112,17 @@ public class FTC_RoverTeleOp extends LinearOpMode {
             // dpad_down runs the grabble arm down in short increments
             double v5 = 0;
 
-            if (gamepad1.dpad_up)
-                v5 = robot.GRAPPLE_LIFT_SPEED;
-            else if (gamepad1.dpad_down)
+            if (gamepad2.dpad_down)
                 v5 = -robot.GRAPPLE_LIFT_SPEED;
-            else if (gamepad1.dpad_left)
+            else if (gamepad2.dpad_up)
+                v5 = robot.GRAPPLE_LIFT_SPEED;
+            else if (gamepad2.dpad_left)
                 gOpen = true;
-            else if (gamepad1.dpad_right)
+            else if (gamepad2.dpad_right)
                 gOpen = false;
 
             // Move the grapple lift drive
-            //robot.grappleDrive.setPower(v5);
+            robot.grappleDrive.setPower(v5);
 
             // Move both servos to new position.  Assume servos are mirror image of each other.
             if (gOpen) {
