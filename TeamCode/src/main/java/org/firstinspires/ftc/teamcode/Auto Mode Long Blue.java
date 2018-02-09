@@ -14,17 +14,8 @@ import com.qualcomm.robotcore.util.Range;
 
 import java.util.Random;
 
-package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.Range;
-
-import java.util.Random;
-
-
-@Autonomous(name = "ShortRed")
-public class ShortRed extends LinearOpMode {
+@Autonomous(name = "AutoMode")
+public class Auto extends LinearOpMode {
 
     // Instantiate the hardware abstraction class HardwareScorpio
     HardwareFTC_Rover robot = new HardwareFTC_Rover();
@@ -104,18 +95,6 @@ public class ShortRed extends LinearOpMode {
         }
     }
     public void dance2(double time, boolean up) {
-
-        double start = System.currentTimeMillis();
-        double end = start + time*50 ; // 60 seconds * 1000 ms/sec
-
-        while (System.currentTimeMillis() < end)
-        {
-
-            setVals(false,0,0,0,up,0);
-            sleep(100);
-        }
-    }
-    public void dance3(double time, boolean up) {
 
         double start = System.currentTimeMillis();
         double end = start + time*50 ; // 60 seconds * 1000 ms/sec
@@ -212,7 +191,7 @@ public class ShortRed extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         int a = 0;
-        double[][] choices = {{0,21,-1},{1,118,1},{0,25,-1},{2,7,1},{0,10,-1},{3,25,1},{0,25,1},{3,35,-1},{0,55,-1},{0,3,1}};
+        double[][] choices = {{0,15,-1},{1,118,-1},{0,25,-1},{2,7,-1},{0,10,-1},{3,25,1},{0,25,1},{3,35,-1},{0,55,-1},{0,3,1}};
         while (opModeIsActive()) {
 
             // The following code is a simple means of operating the holonomic (mecanum wheel)
@@ -306,4 +285,5 @@ public class ShortRed extends LinearOpMode {
 
 
 }
+
 
